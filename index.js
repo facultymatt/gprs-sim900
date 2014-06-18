@@ -323,8 +323,8 @@ GPRS.prototype.readSMS = function (index, mode, remove, callback) {
       0 - Mark the message as read
       1 - Do not chage the status of the message
     remove
-      0 - Keep the message on the simcard
-      1 - Delete the message from the simcard once it is marked read.
+      0 - Keep the message on the SIM card
+      1 - Delete the message from the SIM card once it is marked read.
     callback
       Callback function
 
