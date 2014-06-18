@@ -307,13 +307,8 @@ GPRS.prototype.emitMe = function (beginnings) {
   beginnings.forEach(function (beginning) {
     self.emissions.push(beginning);
   });
-  console.log(this.emissions.length);
-  console.log(this.emissions);
-  console.log(beginnings.length);
-  console.log(beginnings);
   if (this.emissions.length === beginnings.length) {
     //  This is the first time this was called, you should start notifying
-    console.log('boop');
     this._checkEmissions();
   }
 };
