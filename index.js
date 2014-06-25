@@ -20,6 +20,7 @@ var util = require('util');
 var EventEmitter = require('events').EventEmitter;
 var Packetizer = require('./packetizer.js');
 var Postmaster = require('./postmaster.js');
+var PostmasterSimple = require('./postmasterSimple.js');
 
 var DEBUG = false;  //  Debug messages to the console
 
@@ -43,6 +44,12 @@ function GPRS (hardware) {
   self.powered = null;
   //  The defaults are fine for most of Postmaster's args
   self.postmaster = new Postmaster(self.packetizer, ['OK', 'ERROR', '> ']);
+  self.postmasterSimple = new PostmasterSimple(self.packetizer);
+
+  self.postmasterSimple.on('packet', function (data) {
+    self.emit('packet', data);
+  });
+
 }
 
 util.inherits(GPRS, EventEmitter);
@@ -92,6 +99,26 @@ GPRS.prototype._establishContact = function (callback, rep, reps) {
       }
     } 
   }, [['AT', '\\x00AT', '\x00AT', 'OK'], ['OK'], 1]);
+};
+
+// simple interface for communicating with the simcom900 module
+GPRS.prototype._txrxSimple = function (message, patience, callback) {
+  var self = this;
+
+  message  = message  || 'AT';
+  patience = patience || 250;
+  callback = callback || ( function (err, arg) {
+    if (err) {
+      debug('err:\n', err);
+    } else {
+      debug('reply:\n', arg);
+    }
+  });
+  
+  //  It's a virtue, but mostly the module won't work if you're impatient
+  patience = Math.max(patience, 100);
+
+  self.postmasterSimple.sendSimple(message);
 };
 
 // Make UART calls to the SIM900. Use this function to expand the GPRS module's functionality by sending AT commands and recieving the SIM900's replies. If you implement something particularly useful, submit a pull request!
